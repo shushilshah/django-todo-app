@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+      }
+
+      .header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+      }
+
+      .todo-column {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        height: calc(100vh - 200px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border-top: 4px solid;
+      }
+
+      .pending-column {
+        border-top-color: #ffc107;
+      }
+
+      .completed-column {
+        border-top-color: #28a745;
+      }
+
+      .task-item {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-left: 4px solid;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .task-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .priority-high {
+        border-left-color: #dc3545;
+      }
+      .priority-medium {
+        border-left-color: #ffc107;
+      }
+      .priority-low {
+        border-left-color: #28a745;
+      }
+
+      .priority-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .badge-high {
+        background: #dc3545;
+        color: white;
+      }
+      .badge-medium {
+        background: #ffc107;
+        color: #000;
+      }
+      .badge-low {
+        background: #28a745;
+        color: white;
+      }
+
+      .task-title {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .completed .task-title {
+        text-decoration: line-through;
+        color: #6c757d;
+      }
+
+      .task-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+
+      .btn-action {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-task-form {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .stats-box {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
+      }
+
+      .stats-number {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .column-header {
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .tasks-container {
+        overflow-y: auto;
+        height: calc(100% - 60px);
+        padding-right: 10px;
+      }
+
+      /* Custom scrollbar */
+      .tasks-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .tasks-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .tasks-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+      }
+
+      .empty-column {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+      }
+
+      .empty-column i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      /* Django form styling */
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="display-6 mb-2">
+              <i class="bi bi-check2-square me-2"></i>Todo App
+            </h1>
+            <p class="mb-0">Stay organized and productive</p>
+          </div>
+          <div class="col-md-4 text-end">
+            <div
+              class="bg-white text-primary rounded-pill px-3 py-2 d-inline-block"
+            >
+              <i class="bi bi-calendar3 me-2"></i>
+              {% now "F d, Y" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Django Add Task Form -->
+      <div class="add-task-form">
+        <form method="POST" action="{% url 'add_task' %}">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input
+                type="text"
+                class="form-control"
+                name="title"
+                placeholder="What needs to be done?"
+                required
+              />
+            </div>
+
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-plus-circle me-2"></i>Add Task
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Stats -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="stats-box">
+            <div class="stats-number">{{ total_tasks.count }}</div>
+            <small class="text-muted">Total Tasks</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-box">
+            <div class="stats-number text-warning">
+              {{ uncompleted_tasks.count }}
+            </div>
+            <small class="text-muted">Pending</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-box">
+            <div class="stats-number text-success">
+              {{ completed_tasks.count }}
+            </div>
+            <small class="text-muted">Completed</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-box">
+            <div class="stats-number text-danger">{{ overdue_tasks }}</div>
+            <small class="text-muted">Overdue</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Columns -->
+      <div class="row g-4">
+        <!-- Pending Tasks Column -->
+
+        <div class="col-md-6">
+          <div class="todo-column pending-column">
+            <div class="column-header">
+              <h4 class="mb-0">
+                <i class="bi bi-hourglass-split text-warning me-2"></i>
+                Pending Tasks
+                <span class="badge bg-warning ms-2">{{ pending_tasks }}</span>
+              </h4>
+            </div>
+
+            <div class="tasks-container">
+              {% for task in uncompleted_tasks %}
+              <div class="task-item priority-{{ task.priority }}">
+                <div class="task-title">{{ task.title }}</div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="task-date">
+                      <i class="bi bi-calendar3 me-1"></i>{% now "F d, Y" %}
+                    </span>
+                  </div>
+                  <div>
+                    <form
+                      method="POST"
+                      action="{% url 'mark_as_complete' task.id %}"
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-outline-success btn-action me-1"
+                        title="Mark Complete"
+                      >
+                        <i class="bi bi-check"></i>
+                      </button>
+                    </form>
+                    <form
+                      method="POST"
+                      action="{% url 'mark_as_delete' task.id %}"
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-outline-danger btn-action"
+                        title="Delete"
+                        onclick="return confirm('Are you sure you want to delete this task?')"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="empty-column">
+                <i class="bi bi-check2-circle"></i>
+                <p>No pending tasks</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Tasks Column -->
+        <div class="col-md-6">
+          <div class="todo-column completed-column">
+            <div class="column-header">
+              <h4 class="mb-0">
+                <i class="bi bi-check2-all text-success me-2"></i>
+                Completed Tasks {% comment %}
+                <span class="badge bg-success ms-2">{{ completed_tasks }}</span>
+                {% endcomment %}
+              </h4>
+            </div>
+            <div class="tasks-container">
+              {% for task in completed_tasks %}
+              <div class="task-item priority-{{ task.priority }} completed">
+                <div class="task-title">{{ task.title }}</div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="task-date">
+                      <i class="bi bi-calendar3 me-1"></i>Completed: {{
+                      task.completed_at|date:"M d" }}
+                    </span>
+                  </div>
+                  <div>
+                    <form
+                      method="POST"
+                      action="{% url 'mark_as_undone' task.id %}"
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-outline-warning btn-action me-1"
+                        title="Mark Incomplete"
+                      >
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                      </button>
+                    </form>
+                    <form
+                      method="POST"
+                      action="{% url 'mark_as_delete' task.id %}"
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-outline-danger btn-action"
+                        title="Delete"
+                        onclick="return confirm('Are you sure you want to delete this task?')"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="empty-column">
+                <i class="bi bi-check2-circle"></i>
+                <p>No completed tasks</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (for tooltips and other components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Simple confirmation script -->
+    <script>
+      // This minimal script is just for confirm dialogs
+      // You can remove it if you want pure HTML
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add today's date to date input
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach((input) => {
+          if (!input.value) {
+            input.value = new Date().toISOString().split("T")[0];
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
