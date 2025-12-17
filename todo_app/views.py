@@ -5,7 +5,8 @@ from django.http import HttpResponse
 
 def home(request):
     total_tasks = Task.objects.all()
-    uncompleted_tasks = Task.objects.filter(is_completed=False)
+    uncompleted_tasks = Task.objects.filter(
+        is_completed=False).order_by("-updated_at")
     completed_tasks = Task.objects.filter(is_completed=True)
     context = {
         'uncompleted_tasks': uncompleted_tasks,
