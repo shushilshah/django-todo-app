@@ -1,13 +1,24 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import *
 from django.http import HttpResponse
+from .ai_utils import parse_task
+from django.utils.dateparse import parse_datetime
 # Create your views here.
 
 
 def add_task(request):
-    tasks = request.POST['title']
-    Task.objects.create(title=tasks)
-    return redirect("home")
+    if request.method == 'POST':
+        user_text = request.POST["title"]
+
+        ai_data = parse_task(user_text)
+
+        Task.objects.create(
+            title=ai_data['title'],
+            due_date=parse_datetime(
+                ai_data['due_date']) if ai_data['due_date'] else None,
+            priority=ai_data['priority']
+        )
+        return redirect("home")
 
 
 def mark_as_complete(request, pk):
