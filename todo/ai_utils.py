@@ -1,4 +1,5 @@
-import google.genai as genai
+# import google.genai as genai
+from google import genai
 import json
 import os
 from dotenv import load_dotenv
@@ -6,7 +7,7 @@ from .models import AILog
 
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 
