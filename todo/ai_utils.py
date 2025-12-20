@@ -16,10 +16,15 @@ You are a task extraction assistant.
 Extract task information from the text below.
 Return ONLY valid JSON (no markdown, no explanation).
 
+
+Allowed Categories:
+("Work", "Study", "Health", "Personal", "Other")
+
 JSON fields:
 - title(string)
 - due_date (YYYY-MM-DD HH:MM or null)
 - priority(High, Medium, Low)
+- category (from allowed list)
 
 Text:
 {text}
@@ -29,10 +34,17 @@ Text:
     response = model.generate_content(prompt)
 
     try:
-        return json.loads(response.text)
+        data = json.loads(response.text)
+
+        if data['category'] not in ["Work", "Study", "Health", "Personal", "Other"]:
+            data['category'] = "Other"
+
+        return data
+
     except json.JSONDecodeError:
         return {
             'title': text,
             'due_date': None,
-            'priority': "Medium"
+            'priority': "Medium",
+            'category': data['category']
         }

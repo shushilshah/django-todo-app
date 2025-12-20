@@ -29,3 +29,9 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class AILog(models.Model):
+    input_text = models.TextField()
+    error_message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

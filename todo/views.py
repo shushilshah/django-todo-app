@@ -16,7 +16,8 @@ def add_task(request):
             title=ai_data['title'],
             due_date=parse_datetime(
                 ai_data['due_date']) if ai_data['due_date'] else None,
-            priority=ai_data['priority']
+            priority=ai_data['priority'],
+            category=ai_data['category']
         )
         return redirect("home")
 
