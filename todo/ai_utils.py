@@ -2,11 +2,26 @@ import google.generativeai as genai
 import json
 import os
 from dotenv import load_dotenv
+from .models import AILog
 
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
+
+
+def fallback_task(text):
+    AILog.objects.create(
+        input_text=text,
+        error_message="AI Parsing failed"
+    )
+
+    return {
+        'title': text,
+        'due_date': None,
+        'priority': "Medium",
+        'category': "Other"
+    }
 
 
 def parse_task(text: str) -> dict:

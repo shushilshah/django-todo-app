@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import *
 from django.http import HttpResponse
-from .ai_utils import parse_task
+from .ai_utils import parse_task, fallback_task
 from django.utils.dateparse import parse_datetime
 # Create your views here.
 
@@ -40,17 +40,3 @@ def mark_as_delete(request, pk):
     task_to_delete = get_object_or_404(Task, pk=pk)
     task_to_delete.delete()
     return redirect("home")
-
-
-def fallback_task(text):
-    AILog.objects.create(
-        input_text=text,
-        error_message="AI Parsing failed"
-    )
-
-    return {
-        'title': text,
-        'due_date': None,
-        'priority': "Medium",
-        'category': "Other"
-    }
