@@ -41,10 +41,5 @@ Text:
 
         return data
 
-    except json.JSONDecodeError:
-        return {
-            'title': text,
-            'due_date': None,
-            'priority': "Medium",
-            'category': data['category']
-        }
+    except Exception:
+        return fallback_task(text)
