@@ -7,7 +7,8 @@ from .models import AILog
 
 
 load_dotenv()
-genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+genai.Client(api_key=api_key)
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 
